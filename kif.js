@@ -2,9 +2,6 @@ function KifNavButton(name, canvas, start_x, start_y, type) {
 	this.start_x = start_x;
 	this.start_y = start_y;
 
-	this.jq = $("<div id=\"kif_navbar_"+name+"\" class=\"kif_navbutton\"></div>");
-	this.jq.appendTo("#kif_navbar");
-
 	this.canv_container = canvas.rect(start_x, start_y, 40, 40, 10);
 	this.canv_container.attr({fill: "#222", opacity: 0.5});
 	this.canv_doodle = canvas.set();
@@ -39,20 +36,36 @@ function KifNavButton(name, canvas, start_x, start_y, type) {
 			canv_doodle.attr({opacity: 1.0});
 		},
 		function(event) {
-			canv_container.attr({opacity: 0.5});
-			canv_doodle.attr({opacity: 0.5});
+			canv_container.attr({opacity: 0.4});
+			canv_doodle.attr({opacity: 0.4});
 		});
 }
 
-function KifNavbar() {
+function KifNavbar(start_x, start_y) {
 	this.jq = $("<div id=\"kif_navbar\"></div>");
 	this.jq.appendTo("#kif");
-	this.canvas = Raphael("kif_navbar", 200, 40);
+	this.canvas = Raphael("kif_navbar", 185, 40);
 
-	this.first_button = new KifNavButton("first", this.canvas, 10, 0, "first");
-	this.prev_button = new KifNavButton("prev", this.canvas, 55, 0, "prev");
-	this.next_button = new KifNavButton("next", this.canvas, 100, 0, "next");
-	this.last_button = new KifNavButton("last", this.canvas, 145, 0, "last");
+	this.first_button = new KifNavButton("first", this.canvas, start_x+5, start_y, "first");
+	this.prev_button = new KifNavButton("prev", this.canvas, start_x+50, start_y, "prev");
+	this.next_button = new KifNavButton("next", this.canvas, start_x+95, start_y, "next");
+	this.last_button = new KifNavButton("last", this.canvas, start_x+140, start_y, "last");
+
+	var all_buttons = this.canvas.set();
+	all_buttons.push(
+		this.first_button.whole_button,
+		this.prev_button.whole_button,
+		this.next_button.whole_button,
+		this.last_button.whole_button);
+	all_buttons.attr({opacity: 0.0});
+
+	this.jq.hover(
+		function(event) {
+			all_buttons.attr({opacity:0.4})
+		},
+		function(event) {
+			all_buttons.attr({opacity: 0.0});
+		});
 }
 
 function Kif(pres_info) {
@@ -66,12 +79,34 @@ function Kif(pres_info) {
 		slide = url.substring(lb_ndx + 1);
 
 	this.loadNav();
+
 	this.loadSlide(slide);
+}
+
+Kif.prototype.first = function() {
+	console.log("first");
+}
+
+Kif.prototype.prev = function() {
+	console.log("prev");
+}
+
+Kif.prototype.next = function() {
+	console.log("next");
+}
+
+Kif.prototype.last = function() {
+	console.log("last");
 }
 
 Kif.prototype.loadSlide = function(name) {
 }
 
 Kif.prototype.loadNav = function() {
-	this.navbar = new KifNavbar();
+	this.navbar = new KifNavbar(0, 0);
+
+	this.navbar.first_button.whole_button.click(this.first);
+	this.navbar.prev_button.whole_button.click(this.prev);
+	this.navbar.next_button.whole_button.click(this.next);
+	this.navbar.last_button.whole_button.click(this.last);
 }
