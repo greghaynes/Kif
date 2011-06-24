@@ -100,6 +100,11 @@ Kif.prototype.last = function() {
 }
 
 Kif.prototype.loadSlide = function(name) {
+	console.log("Loading slide "+name);
+	$("#kif_slide").html("<center><h3>Loading</h3></center>");
+	$.get(name, function(data) {
+		$("#kif_slide").html(data);
+		});
 }
 
 Kif.prototype.loadNav = function() {
