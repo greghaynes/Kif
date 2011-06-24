@@ -89,45 +89,60 @@ function Kif(pres_info) {
 	
 	// Determine current slide
 	var url = decodeURI(window.location);
-	var slide = pres_info["slides"][0];
+	var slide = this.pres_info["slides"][0];
 	var lb_ndx = url.indexOf("#");
 	if(lb_ndx >= 0)
 		slide = url.substring(lb_ndx + 1);
 
 	this.loadNav();
-
 	this.loadSlide(slide);
 }
 
 Kif.prototype.first = function() {
-	console.log("first");
+	this.loadSlide(this.pres_info["slides"][0]);
 }
 
 Kif.prototype.prev = function() {
-	console.log("prev");
+	if(this.slide_ndx <= 0)
+		return;
+	this.loadSlide(this.pres_info["slides"][this.slide_ndx-1]);
 }
 
 Kif.prototype.next = function() {
-	console.log("next");
+	if((this.slide_ndx+1) >= this.pres_info["slides"].length || this.slide_ndx < 0)
+		return;
+	this.loadSlide(this.pres_info["slides"][this.slide_ndx+1]);
 }
 
 Kif.prototype.last = function() {
-	console.log("last");
+	this.loadSlide(this.pres_info["slides"][this.pres_info["slides"].length-1]);
 }
 
 Kif.prototype.loadSlide = function(name) {
 	console.log("Loading slide "+name);
+	window.location.hash = name;
 	$("#kif_slide").html("<center><h3>Loading</h3></center>");
 	$.get(name, function(data) {
 		$("#kif_slide").html(data);
 		});
+
+	// Determine slide ndx
+	this.slide_ndx = 0;
+	for (i in this.pres_info["slides"]) {
+		if(this.pres_info["slides"][i] == name)
+			break;
+		++this.slide_ndx;
+	}
+	if(this.pres_info["slides"][this.slide_ndx] != name)
+		this.slide_ndx = -1;
 }
 
 Kif.prototype.loadNav = function() {
 	this.navbar = new KifNavbar(0, 0);
+	var t_this = this;
 
-	this.navbar.first_button.whole_button.click(this.first);
-	this.navbar.prev_button.whole_button.click(this.prev);
-	this.navbar.next_button.whole_button.click(this.next);
-	this.navbar.last_button.whole_button.click(this.last);
+	this.navbar.first_button.whole_button.click(function() { t_this.first(); });
+	this.navbar.prev_button.whole_button.click(function() { t_this.prev(); });
+	this.navbar.next_button.whole_button.click(function() { t_this.next(); });
+	this.navbar.last_button.whole_button.click(function() { t_this.last(); });
 }
