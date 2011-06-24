@@ -42,30 +42,46 @@ function KifNavButton(name, canvas, start_x, start_y, type) {
 }
 
 function KifNavbar(start_x, start_y) {
-	this.jq = $("<div id=\"kif_navbar\"></div>");
-	this.jq.appendTo("#kif");
-	this.canvas = Raphael("kif_navbar", 185, 40);
+	this.jq = $("#kif_navbar");
+	this.canvas = Raphael("kif_navbar", 185, 65);
 
 	this.first_button = new KifNavButton("first", this.canvas, start_x+5, start_y, "first");
 	this.prev_button = new KifNavButton("prev", this.canvas, start_x+50, start_y, "prev");
 	this.next_button = new KifNavButton("next", this.canvas, start_x+95, start_y, "next");
 	this.last_button = new KifNavButton("last", this.canvas, start_x+140, start_y, "last");
 
-	var all_buttons = this.canvas.set();
-	all_buttons.push(
+	this.show_tab = this.canvas.set();
+	this.show_tab.push(
+		this.canvas.rect(0, 40, 185, 23, 10),
+		this.canvas.text(87, 52, "Navigation"));
+	this.show_tab.attr({fill: "#222", stroke: "#EEE", "font-size": 14});
+
+	this.all_buttons = this.canvas.set();
+	this.all_buttons.push(
 		this.first_button.whole_button,
 		this.prev_button.whole_button,
 		this.next_button.whole_button,
 		this.last_button.whole_button);
-	all_buttons.attr({opacity: 0.0});
+
+	var t_this = this;
 
 	this.jq.hover(
 		function(event) {
-			all_buttons.attr({opacity:0.4})
+			t_this.show();
 		},
 		function(event) {
-			all_buttons.attr({opacity: 0.0});
+			t_this.hide();
 		});
+
+	this.hide();
+}
+
+KifNavbar.prototype.hide = function() {
+	this.jq.animate({top: -52}, 300);
+}
+
+KifNavbar.prototype.show = function() {
+	this.jq.animate({top: 0}, 300);
 }
 
 function Kif(pres_info) {
