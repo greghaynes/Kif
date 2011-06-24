@@ -1,3 +1,24 @@
+/* Copyright (c) 2011 Gregory Haynes <greg@greghaynes.net>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 function KifNavButton(name, canvas, start_x, start_y, type) {
 	this.start_x = start_x;
 	this.start_y = start_y;
@@ -23,6 +44,11 @@ function KifNavButton(name, canvas, start_x, start_y, type) {
 
 		if(type == "first")
 			canv_doodle.push(canvas.path("M"+(start_x+8)+" "+(start_y+10)+"L"+(start_x+8)+" "+(start_y+32)));
+	} else if(type == "home") {
+		canv_doodle.push(
+			canvas.path("M"+(start_x+5)+" "+(start_y+15)+"L"+(start_x+20)+" "+(start_y+5)+"L"+(start_x+35)+" "
+				+(start_y+15)+"L"+(start_x+5)+" "+(start_y+15)),
+			canvas.rect(start_x+10, start_y+17, 20, 15));
 	}
 
 	canv_doodle.attr({stroke: "#DDD", fill: "#DDD", opacity: 0.5});
@@ -43,17 +69,18 @@ function KifNavButton(name, canvas, start_x, start_y, type) {
 
 function KifNavbar(start_x, start_y) {
 	this.jq = $("#kif_navbar");
-	this.canvas = Raphael("kif_navbar", 185, 65);
+	this.canvas = Raphael("kif_navbar", 230, 65);
 
 	this.first_button = new KifNavButton("first", this.canvas, start_x+5, start_y, "first");
 	this.prev_button = new KifNavButton("prev", this.canvas, start_x+50, start_y, "prev");
 	this.next_button = new KifNavButton("next", this.canvas, start_x+95, start_y, "next");
 	this.last_button = new KifNavButton("last", this.canvas, start_x+140, start_y, "last");
+	this.home_button = new KifNavButton("home", this.canvas, start_x+185, start_y, "home");
 
 	this.show_tab = this.canvas.set();
 	this.show_tab.push(
-		this.canvas.rect(0, 40, 185, 23, 10),
-		this.canvas.text(87, 52, "Navigation"));
+		this.canvas.rect(22, 42, 185, 23, 5),
+		this.canvas.text(115, 52, "Navigation"));
 	this.show_tab.attr({fill: "#222", stroke: "#EEE", "font-size": 14});
 
 	this.all_buttons = this.canvas.set();
@@ -61,7 +88,8 @@ function KifNavbar(start_x, start_y) {
 		this.first_button.whole_button,
 		this.prev_button.whole_button,
 		this.next_button.whole_button,
-		this.last_button.whole_button);
+		this.last_button.whole_button,
+		this.home_button.whole_button);
 
 	var t_this = this;
 
@@ -118,6 +146,10 @@ Kif.prototype.last = function() {
 	this.loadSlide(this.pres_info["slides"][this.pres_info["slides"].length-1]);
 }
 
+Kif.prototype.home = function() {
+	window.location = this.pres_info["home"];
+}
+
 Kif.prototype.loadSlide = function(name) {
 	console.log("Loading slide "+name);
 	window.location.hash = name;
@@ -145,4 +177,5 @@ Kif.prototype.loadNav = function() {
 	this.navbar.prev_button.whole_button.click(function() { t_this.prev(); });
 	this.navbar.next_button.whole_button.click(function() { t_this.next(); });
 	this.navbar.last_button.whole_button.click(function() { t_this.last(); });
+	this.navbar.home_button.whole_button.click(function() { t_this.home(); });
 }
